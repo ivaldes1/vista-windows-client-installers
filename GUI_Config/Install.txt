@@ -1,0 +1,36 @@
+12/30/2008
+
+Quick GUI_Config installation instructions by Ignacio H. Valdes, MD, MS. GUI_Config program by 
+Kevin Toppenberg, MD
+
+To install the client on Windows:
+
+1) Drag the GUI_Config folder out of the GUI_config.zip folder to the Desktop or use an unzip program.
+2) Double click GUI_Config folder to open it.
+3) Right click GUI_Config.exe-->Send to-->Desktop (create shortcut)
+4) Right click 'Shortcut to GUI_Config'-->Properties. In the Target field 
+   go to the end of the text and past the last " add S=??? P=??? where S is the IP
+   address of your WorldVistA server and P is the port number.
+
+
+If you have not installed the KID server patch, open the GUI_Config folder then open 
+   the KIDS Server patch folder. The TMG_GUI_CONFIG-1-2.kid is the patch file. There are 
+   instructions on how to install it in TMG_GUI_CONFIG-1-1.txt but it assumes you know how
+   to get to the KIDS patching menu items. Beginners who do not know how it is done at all
+   take note:
+
+In general, KIDs patches on a Linux server are done as follows: 
+1)	Obtain the KIDs patch and place it into a directory on the server where you know 
+        it is and that the id running VistA can get to it. In our example, the id that 
+        runs VistA is vista, so a good place to put it for access later is /home/vista.
+2)      Remove possible Microsoft formatting for CR and LF by doing the following at a bash prompt: 
+        \home\vista\: zip TMG_GUI_CONFIG-1-2.zip TMG_GUI_CONFIG-1-2.kid
+        \home\vista\: unzip -a TMG_GUI_CONFIG-1-2.zip
+        This will change any Microsoft carriage return/line feeds to proper Unix format.
+2)	Get to the gtm prompt, get into the system in programmer mode via S DUZ=whatever id D ^XUP 
+3)	Navigate through the system by going to to: EVE -> Prog -> KIDS -> Install 
+4)	Choose option 1 Load a Distribution.
+5)	Enter the fully qualified path such as /home/vista/TMG-GUI-CONFIG-1-2.kid 
+6)      Before you choose option 6 install, have TMG_GUI_CONFIG-1-1.txt open and available
+        to answer some of the questions it will ask.
+7)	Choose option 6 Install Packages and enter TMG and it should install. 

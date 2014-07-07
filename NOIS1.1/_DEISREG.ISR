@@ -1,0 +1,9 @@
+[SelfReg]
+File1=C:\WINDOWS\system32\VSPELL32.OCX
+File2=C:\WINDOWS\system32\NMORENU.DLL
+File3=C:\WINDOWS\system32\OLEPRO32.DLL
+File4=C:\WINDOWS\system32\HTML.OCX
+Files=4
+[Admin Install]
+Admin=1
+Error=This installation can only be uninstalled by a user with administrative priviledges. Uninstallation will now exit.

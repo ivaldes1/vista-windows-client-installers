@@ -1,0 +1,21 @@
+***  Installation Started 07/12/2010 9:52  ***
+Title: XWB1_1P29 BDK32 Client Tools Registration Installation
+Source: C:\Documents and Settings\Ignacio\My Documents\Downloads\XWB1_1P29PG.EXE | 07-12-2010 | 09:52:06 | 865767
+File Copy: C:\Program Files\VistA\Common Files\UNWISE.EXE | 06-25-1999 | 11:55:30 | | 149504 | 30fdd633
+RegDB Key: Software\Microsoft\Windows\CurrentVersion\Uninstall\XWB1_1P29 BDK32 Client Tools Registration
+RegDB Val: XWB1_1P29 BDK32 Client Tools Registration
+RegDB Name: DisplayName
+RegDB Root: 2
+RegDB Key: Software\Microsoft\Windows\CurrentVersion\Uninstall\XWB1_1P29 BDK32 Client Tools Registration
+RegDB Val: C:\PROGRA~1\VistA\COMMON~1\UNWISE.EXE C:\PROGRA~1\VistA\COMMON~1\INSTALL.LOG
+RegDB Name: UninstallString
+RegDB Root: 2
+File Copy: C:\Program Files\VistA\Common Files\RPCSharedBrokerSessionMgr1.exe | 05-08-2002 | 15:29:32 | 1.0.0.1 | 680960 | b176eef1
+File Copy: C:\Program Files\VistA\Common Files\xuesap.tlb | 04-18-2001 | 08:13:40 | | 2820 | 74887b7b
+File Copy: C:\Program Files\VistA\Common Files\XWB1_1P29.bat | 03-12-2002 | 13:45:10 | | 115 | 328c42e8
+File Copy: C:\Program Files\VistA\Common Files\readme for XWB1_1P29.txt | 05-09-2002 | 13:12:26 | | 2286 | dcae4f87
+File Copy: C:\Program Files\VistA\Common Files\RPCSharedBrokerSessionMgr.exe | 01-07-2002 | 16:16:50 | 1.0.0.1 | 670720 | ffa3017a
+File Copy: C:\Program Files\VistA\Common Files\tregsvr.exe | 08-11-1999 | 06:00:00 | | 55296 | 235e551
+Self-Register: C:\PROGRA~1\VistA\COMMON~1\RPCSHA~1.EXE
+Self-Register: C:\PROGRA~1\VistA\COMMON~1\xuesap.tlb
+Self-Register: C:\PROGRA~1\VistA\COMMON~1\RPCSHA~2.EXE

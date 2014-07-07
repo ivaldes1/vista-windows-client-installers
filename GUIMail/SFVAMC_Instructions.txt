@@ -1,0 +1,40 @@
+Load the following per their included instructions.
+  VA Kernel Shared RPC Broker
+  VA FileMan Delphi Components
+  Internet Component Suite (ICS)
+  Raize Components
+
+
+In Delphi, use File | Open to load the following *.dpk packages.
+  DOMAIN.DPK
+  DragDropPk.dpk
+  ExtendedListView.dpk
+
+
+In Delphi, use Tools | Environment Options | Library to add the path to the components installed above.
+
+
+In Delphi, use Tools | Environment Options | Library to add the path to the following file.
+  MFunctions.pas
+
+
+In Delphi, use Component | Install Component to load the following *.pas units.
+  CWPrtDlg.pas
+  DSeldlg.pas
+  lbseldlg.pas
+  TRAYICON.PAS
+  UUREG.PAS
+  guimail.pas
+
+
+In Delphi, use Tools | Environment Options | Library to add the path to the components installed above.
+
+
+In Delphi, use File | Open Project to open the following *.dpr project.
+  spltestmailp.dpr
+
+
+In Delphi, use Project | Build All Projects to compile GUIMail.
+
+
+Rename the resulting spltestmailp.exe file to GUIMail.exe.

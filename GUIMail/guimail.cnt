@@ -1,0 +1,9 @@
+:Base guimail.hlp
+:Title Gui Vista Mail Version 2.0
+1 Gui Vista Mail Version 2.0 Help
+2 Interacting with the Gui Vista Mail Main Screen=hlp_mainscreen
+2 Creating a new message=hlp_createmessage
+2 Replying to a Message=hlp_reply
+2 Forwarding a message=hlp_forward
+2 Managing your messages=hlp_managemessages
+2 Preferences=hlp_preferences

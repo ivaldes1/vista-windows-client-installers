@@ -1,0 +1,647 @@
+; Astronaut VistA Client Installer
+; Copyright (c) 2009 Astronaut, LLC
+; Author: Ignacio Valdes <ivaldes@hal-pc.org>
+; Desc: Point-click installer of all Astronauts clients.
+; License: This installer is Affero General Public License version 3.
+
+!define PRODUCT_NAME "Astronaut VistA Client Installer"
+!define PRODUCT_VERSION "0.9.9.7"
+!define PRODUCT_PUBLISHER "Astronaut, LLC"
+!define PRODUCT_WEB_SITE "http://astronautvista.com/join_form"
+!define URL "http://astronautvista.com/join_form"
+!define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\ASTRO-ALL"
+!define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
+!define PRODUCT_UNINST_ROOT_KEY "HKLM"
+!define PRODUCT_STARTMENU_REGVAL "NSIS:StartMenuDir"
+!define VPN_HOST "127.0.0.1"
+!define CPRS_SPOOF "1.0.26.66"
+!define SSHclientID "client"
+!define textclientID "text"
+!define PORT "9260"
+!define RPC_PORT "9210"
+!define TEXT_CLIENT_ID "${textclientID}${PORT}"
+!define SSH_CLIENT_ID "${SSHclientID}${PORT}"
+!define TEXT_CLIENT_PASS "not#1sostrong"
+!define SSH_CLIENT_PASS "not#1sostrong"
+!define DEFAULT_PROFILE "Default"
+
+;!define ALL_USERS
+;!include EnvVarUpdate.nsh  # From the internet, put in NSIS/include folder.
+
+; include for some of the windows messages defines for adding/deleting environment variables.
+!include "WinMessages.nsh"
+!include "Sections.nsh"
+; All users system environment.
+!define env_hklm 'HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"'
+; un-comment for local user environment.
+;!define env_hkcu 'HKCU "Environment"'
+
+var VISTA_HOST
+var VISTA_PORT
+var VISTA_Dialog
+var VISTA_HOST_LABEL
+var VISTA_PORT_LABEL
+var VISTA_RPC_LINK_LABEL
+var VISTA_RPC_PORT_CONTROL
+var VISTA_COMM_LABEL
+
+!ifndef PORT
+   !define PORT "9260"
+!endif
+!ifndef HOST
+    !define HOST "localhost"
+!ENDIF
+
+; MUI 1.67 compatible ------
+!include "MUI.nsh"
+!include nsDialogs.nsh
+!include LogicLib.nsh
+
+; User friendly header for NsDialogs
+!macro NSD_SetUserData hwnd data
+	nsDialogs::SetUserData ${hwnd} ${data}
+!macroend
+!define NSD_SetUserData `!insertmacro NSD_SetUserData`
+
+!macro NSD_GetUserData hwnd outvar
+	nsDialogs::GetUserData ${hwnd}
+	Pop ${outvar}
+!macroend
+!define NSD_GetUserData `!insertmacro NSD_GetUserData`
+
+; MUI Settings
+;!define MUI_HEADERIMAGE
+;!define MUI_HEADERIMAGE_BITMAP "${NSISDIR} \Documents and Settings\Ignacio\My Documents\VistA Client Installer\GUI_Config\splash.jpg" ; optional
+!define MUI_ABORTWARNING
+;!define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\astro_vista.ico"
+!define MUI_ICON "astro_vista.ico"
+!define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
+
+!define MUI_CUSTOMFUNCTION_GUIINIT MUIGUIInit
+!define IMG_NAME astro_splash.jpg
+; Welcome page
+!insertmacro MUI_PAGE_WELCOME
+; License page
+!insertmacro MUI_PAGE_LICENSE "license.txt"
+
+; Page to get the VistA Host and Port number
+Page custom VistAHostandPort VistAHostandPortPageLeave
+
+; Components page
+!insertmacro MUI_PAGE_COMPONENTS
+; Directory page
+!insertmacro MUI_PAGE_DIRECTORY
+; Start menu page
+var ICONS_GROUP
+!define MUI_STARTMENUPAGE_NODISABLE
+!define MUI_STARTMENUPAGE_DEFAULTFOLDER "Astronaut"
+!define MUI_STARTMENUPAGE_REGISTRY_ROOT "${PRODUCT_UNINST_ROOT_KEY}"
+!define MUI_STARTMENUPAGE_REGISTRY_KEY "${PRODUCT_UNINST_KEY}"
+!define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "${PRODUCT_STARTMENU_REGVAL}"
+!insertmacro MUI_PAGE_STARTMENU Application $ICONS_GROUP
+; Instfiles page
+!insertmacro MUI_PAGE_INSTFILES
+; Finish page
+;!define MUI_FINISHPAGE_RUN "$INSTDIR\CPRSChartWVEHR-VOE1.0.exe"
+
+!define MUI_FINISHPAGE_SHOWREADME "$PROGRAMFILES\VistA\README.txt"
+!define MUI_FINISHPAGE_SHOWREADME_NOTCHECKED
+!define MUI_FINISHPAGE_RUN
+!define MUI_FINISHPAGE_RUN_TEXT "Start SSH Tunnel Now"
+!define MUI_FINISHPAGE_RUN_FUNCTION "LaunchLink"
+!insertmacro MUI_PAGE_FINISH
+
+; Reserve files for custom dialog.
+;  ReserveFile "ioA.ini"
+;  !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
+
+; Uninstaller pages
+!insertmacro MUI_UNPAGE_INSTFILES
+
+; Language files
+!insertmacro MUI_LANGUAGE "English"
+
+; MUI end ------
+
+Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
+OutFile "astronaut_clients.${PRODUCT_VERSION}.exe"
+InstallDir "$PROGRAMFILES\VistA"
+InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
+ShowInstDetails show
+ShowUnInstDetails show
+
+Section "tmg-cprs" SEC01
+  SetOutPath "$INSTDIR\tmg-cprs"
+  SetOverwrite try
+  File "..\tmg-cprs\*"
+  SetOutPath "$INSTDIR\tmg-cprs\Server_KIDS"
+  File "..\tmg-cprs\Server_KIDS\*"
+;  SetOutPath "$INSTDIR\tmg-cprs\TMG_Extra\Skins"
+;  File "..\tmg-cprs\TMG_Extra\Skins\*"
+  SetOutPath "$INSTDIR\Common Files"
+  File "..\Common_Files\*"
+
+; Shortcuts
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+  CreateDirectory "$SMPROGRAMS\$ICONS_GROUP"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\TMG-CPRS-0.9.lnk" "$INSTDIR\tmg-cprs\CPRSChart.exe" "S=%ASTRO_LOCAL_HOST% P=%ASTRO_PORT% CCOW=DISABLE SPOOF-VER=%ASTRO_CPRS_SPOOF%"
+  CreateShortCut "$DESKTOP\TMG-CPRS.lnk" "$INSTDIR\tmg-cprs\CPRSChart.exe" "S=%ASTRO_LOCAL_HOST% P=%ASTRO_PORT% CCOW=DISABLE SPOOF-VER=%ASTRO_CPRS_SPOOF%"
+  !insertmacro MUI_STARTMENU_WRITE_END
+SectionEnd
+
+Section "GUI-Config" SEC02
+  SetOutPath "$INSTDIR\GUI_Config"
+;  File "..\..\GUI_Config\Example Shortcut to GUI_Config.exe.lnk"
+  File "..\GUI_Config\*"
+  SetOutPath "$INSTDIR\GUI_Config\KIDS Server patch"
+  File "..\GUI_Config\KIDS Server patch\*"
+;  SetOutPath "$INSTDIR\GUI_Config\SkinStuff\Skins"
+;  File "..\GUI_Config\SkinStuff\Skins\*"
+
+; Shortcuts
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\VistA Config.lnk" "$INSTDIR\GUI_Config\GUI_Config.exe" "S=%ASTRO_LOCAL_HOST% P=%ASTRO_PORT% CCOW=DISABLE"
+#  CreateShortCut "$DESKTOP\VistA Config.lnk" "$INSTDIR\GUI_Config\GUI_Config.exe" "S=%ASTRO_LOCAL_HOST% P=%ASTRO_PORT% CCOW=DISABLE"
+  !insertmacro MUI_STARTMENU_WRITE_END
+SectionEnd
+
+Section "Scheduling" SEC03
+  SetOutPath "$INSTDIR\Clinical_Scheduling"
+  SetOverwrite try
+  File "..\ClinicalScheduling\*"
+
+; Shortcuts
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+  CreateDirectory "$SMPROGRAMS\$ICONS_GROUP"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\VistA Clinical Scheduling.lnk" "$INSTDIR\Clinical_Scheduling\ClinicalScheduling.exe"
+  CreateShortCut "$DESKTOP\VistA Clinical Scheduling.lnk" "$INSTDIR\Clinical_Scheduling\ClinicalScheduling.exe"
+  !insertmacro MUI_STARTMENU_WRITE_END
+SectionEnd
+
+Section "Text Client" SEC04
+  SetOutPath "$INSTDIR\Putty"
+  SetOverwrite try
+  File "..\putty.exe"
+
+; Shortcuts
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Text Client.lnk" "$INSTDIR\Putty\putty.exe" "-P 22 %ASTRO_SSH_HOST% -l %ASTRO_textID% -pw %ASTRO_TEXT_PASS%"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Admin.lnk" "$INSTDIR\Putty\putty.exe" "-ssh -P 22 %ASTRO_SSH_HOST%"
+  CreateShortCut "$DESKTOP\Text Client.lnk" "$INSTDIR\Putty\putty.exe" "-ssh -P 22 %ASTRO_SSH_HOST% -l %ASTRO_textID% -pw %ASTRO_TEXT_PASS%"
+  !insertmacro MUI_STARTMENU_WRITE_END
+SectionEnd
+
+Section "Vitals" SEC05
+  SetOutPath "$INSTDIR\Vitals"
+  File "..\Vitals\*"
+  SetOutPath "$INSTDIR\Vitals\Help"
+  File "..\Vitals\Help\*"
+
+; Shortcuts
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Vitals.lnk" "$INSTDIR\Vitals\Vitals.exe" "S=%ASTRO_LOCAL_HOST% P=%ASTRO_PORT% CCOW=DISABLE"
+  CreateShortCut "$DESKTOP\Vitals.lnk" "$INSTDIR\Vitals\Vitals.exe" "S=%ASTRO_LOCAL_HOST% P=%ASTRO_PORT% CCOW=DISABLE"
+  !insertmacro MUI_STARTMENU_WRITE_END
+SectionEnd
+
+Section "VitalsManager" SEC06
+  SetOutPath "$INSTDIR\Vitals"
+  File "..\Vitals\*"
+  SetOutPath "$INSTDIR\Vitals\Help"
+  File "..\Vitals\Help\*"
+
+; Shortcuts
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\VitalsManager.lnk" "$INSTDIR\Vitals\VitalsManager.exe" "S=%ASTRO_LOCAL_HOST% P=%ASTRO_PORT% CCOW=DISABLE"
+  !insertmacro MUI_STARTMENU_WRITE_END
+SectionEnd
+
+
+Section "GUIMail 2.3" SEC07
+  SetOutPath "$INSTDIR\GUIMail"
+  File "..\GUIMail\*"
+; Shortcuts
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\GUIMail 2.3.lnk" "$INSTDIR\GUIMail\GuiMail_p40.exe" "S=%ASTRO_LOCAL_HOST% P=%ASTRO_PORT% CCOW=DISABLE"
+  CreateShortCut "$DESKTOP\GUIMail 2.3.lnk" "$INSTDIR\GUIMail\GuiMail_p40.exe" "S=%ASTRO_LOCAL_HOST% P=%ASTRO_PORT% CCOW=DISABLE"
+  !insertmacro MUI_STARTMENU_WRITE_END
+SectionEnd
+
+Section "Shift Handoff Tool" SEC08
+  SetOutPath "$INSTDIR\ShiftHandoffTool"
+  File "..\ShiftHandOffTool\*"
+; Shortcuts
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Shift Handoff Tool.lnk" "$INSTDIR\ShiftHandoffTool\ShiftHandoffTool.exe" "S=%ASTRO_LOCAL_HOST% P=%ASTRO_PORT% CCOW=DISABLE"
+  !insertmacro MUI_STARTMENU_WRITE_END
+SectionEnd
+
+Section "Group Notes" SEC09
+  SetOutPath "$INSTDIR\Group_Notes"
+  File "..\Group_Notes\*"
+; Shortcuts
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Group Notes.lnk" "$INSTDIR\Group_Notes\GroupNotes.exe" "S=%ASTRO_LOCAL_HOST% P=%ASTRO_PORT% CCOW=DISABLE"
+  !insertmacro MUI_STARTMENU_WRITE_END
+SectionEnd
+
+Section "CPRS Query Tool" SEC10
+  SetOutPath "$INSTDIR\CPRS_Query_Tool"
+  File "..\CPRS_Query_Tool\CPRSQuery.exe"
+  File "..\CPRS_Query_Tool\OR_30_153IG.pdf"
+  File "..\CPRS_Query_Tool\OR_30_153UM.pdf"
+; Shortcuts
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\CPRS Query Tool.lnk" "$INSTDIR\CPRS_Query_Tool\CPRSQuery.exe" "S=%ASTRO_LOCAL_HOST% P=%ASTRO_PORT% CCOW=DISABLE"
+  !insertmacro MUI_STARTMENU_WRITE_END
+SectionEnd
+
+Section "OpenVistA CIS Stub" SEC11
+  SetOutPath "$PROGRAMFILES\Medsphere\OpenVista CIS"
+; Shortcuts
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\OpenVistA CIS Stub.lnk" "$PROGRAMFILES\Medsphere\OpenVista CIS\OpenVistaCIS.exe" "s=%ASTRO_LOCAL_HOST% p=%ASTRO_PORT%"
+  !insertmacro MUI_STARTMENU_WRITE_END
+SectionEnd
+
+Section "Session Manager" SEC12
+  SetOutPath "$INSTDIR\Session_Manager"
+  File "..\Session_Manager\*"
+  CreateDirectory "$SMPROGRAMS\$ICONS_GROUP\Sessions"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Sessions\Add or Edit....lnk" "$INSTDIR\Session_Manager\astro_instance_parms0.1.exe"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Sessions\Client Variables.lnk" "control.exe" "sysdm.cpl,System,3" "" ""
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Sessions\Load Default.lnk" "$INSTDIR\Session_Manager\astro_parms.bat" " Default ${VPN_HOST} $VISTA_PORT $VISTA_HOST ${CPRS_SPOOF} ${SSH_CLIENT_ID} ${SSH_CLIENT_PASS} ${TEXT_CLIENT_ID} ${TEXT_CLIENT_PASS}" "" ""
+; Shortcut to environment variable editing.
+SectionEnd
+
+Section "BCMA" SEC13
+  SetOutPath "$INSTDIR\BCMA"
+;  File "..\..\GUI_Config\Example Shortcut to GUI_Config.exe.lnk"
+  File "..\BCMA\*"
+;  SetOutPath "$INSTDIR\GUI_Config\SkinStuff\Skins"
+;  File "..\GUI_Config\SkinStuff\Skins\*"
+
+; Shortcuts
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\BCMA.lnk" "$INSTDIR\BCMA\BCMA.exe" "S=%ASTRO_LOCAL_HOST% P=%ASTRO_PORT% CCOW=DISABLE"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\BCMApar.lnk" "$INSTDIR\BCMA\BCMApar.exe" "S=%ASTRO_LOCAL_HOST% P=%ASTRO_PORT% CCOW=DISABLE"
+  !insertmacro MUI_STARTMENU_WRITE_END
+SectionEnd
+
+Section "SSH Tunnel" SEC14
+; ssh tunnel shortcut.
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+  CreateShortCut "$SMPROGRAMS\Startup\Astronaut SSH.lnk" "$INSTDIR\Putty\putty.exe" "-ssh -l %ASTRO_SSH_clientID% -pw %ASTRO_SSH_CLIENT_PASS% -L %ASTRO_PORT%:${VPN_HOST}:%ASTRO_PORT% %ASTRO_SSH_HOST%" "" "" SW_SHOWMINIMIZED
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Astronaut SSH.lnk" "$INSTDIR\Putty\putty.exe" "-ssh -l %ASTRO_SSH_clientID% -pw %ASTRO_SSH_CLIENT_PASS% -L %ASTRO_PORT%:${VPN_HOST}:%ASTRO_PORT% %ASTRO_SSH_HOST%" "" "" SW_SHOWMINIMIZED
+  !insertmacro MUI_STARTMENU_WRITE_END
+SectionEnd
+
+Section -AdditionalIcons
+  SetOutPath "$INSTDIR"
+  File "README.txt"
+  SetOutPath $INSTDIR
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+  WriteIniStr "$INSTDIR\${PRODUCT_NAME}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Website.lnk" "$INSTDIR\${PRODUCT_NAME}.url"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Uninstall.lnk" "$INSTDIR\uninst.exe"
+  !insertmacro MUI_STARTMENU_WRITE_END
+  nsisStartMenu::RegenerateFolder "$ICONS_GROUP"
+  nsisStartMenu::RegenerateFolder "$ICONS_GROUP\Sessions"
+SectionEnd
+
+Section -Post
+  ExecShell "" "$SMPROGRAMS\$ICONS_GROUP\Website.lnk"
+  WriteUninstaller "$INSTDIR\uninst.exe"
+  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\CPRSChart.exe"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\CPRSChartWVEHR-VOE1.0.exe"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
+SectionEnd
+
+; Section descriptions
+!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "TMG-CPRS Clinical Client"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "Clinical Scheduling."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "Text Interface Client."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "TMG-VistA-Config."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} "Vitals."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC06} "Vitals Manager."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC07} "GUI Mail."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC08} "Shift Handoff Tool."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC09} "Group Notes."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC10} "CPRS Query Tool."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC11} "OpenVista CIS Stub -- Requires separate installation of OpenVistA CIS."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC12} "Session Manager -- Not necessary if only using one server."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC13} "Bar Code Medication Administration."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC14} "SSH Tunnel Communication. Un-check for legacy."
+!insertmacro MUI_FUNCTION_DESCRIPTION_END
+
+Function .onInit
+
+;  the plugins dir is automatically deleted when the installer exits
+    InitPluginsDir
+    SetOutPath "$PLUGINSDIR"
+
+;  Modeless banner sample: show + wait
+    File ${IMG_NAME}
+    newadvsplash::show /NOUNLOAD 2000 0 0 -2 /BANNER "$PLUGINSDIR\${IMG_NAME}"
+;    newadvsplash::show /NOUNLOAD 2000 1000 500 -2 /BANNER "$PLUGINSDIR\${IMG_NAME}"
+    Sleep 2000 ; not changes 3.5 sec of 'show time'. add your code instead of sleep
+
+FunctionEnd
+
+Function .onInstSuccess
+  MessageBox MB_ICONINFORMATION|MB_OK "Congratulations! Please register for news and product updates http://astronautvista.com/join_form."
+FunctionEnd
+
+; MUI requires custom function definition
+Function MUIGUIInit
+
+    newadvsplash::stop /wait ; waits or exits immediately if finished, use just 'stop' to terminate
+
+    Delete "$PLUGINSDIR\${IMG_NAME}"
+    SetOutPath "$EXEDIR"
+
+;  plug-in requires this to be called in .onGUIInit
+;  if you use 'show' in the .onInit function with /BANNER key.
+    ShowWindow $HWNDPARENT ${SW_RESTORE}
+
+FunctionEnd
+
+
+; Uneeded based on new version of VistAIPandPort
+;Function .onInit
+;  ;Extract InstallOptions INI files
+;  WriteIniStr 'ioA.ini' 'Field 2' 'State' "${STATIC_VISTA_HOST}"
+;  WriteIniStr 'ioA.ini' 'Field 4' 'State' "${STATIC_VISTA_PORT}"
+;  !insertmacro MUI_INSTALLOPTIONS_EXTRACT "ioA.ini"
+;FunctionEnd
+
+; Ignacios original function (under a different name) was based on the InstallOptions method
+; which used an outside ini file to determine the contents of a page that
+; gathers content from the user
+; the problem is that using this makes it almost impossible to set
+; defaults for the values in those option pages
+;
+;Function VistAIPandPort
+;  !insertmacro MUI_HEADER_TEXT "Server Host Name/IP Address and Port Number" "Enter the WorldVistA Server Host Name/IP Address and Port Number."
+;  !insertmacro MUI_INSTALLOPTIONS_DISPLAY "ioA.ini"
+;  !insertmacro MUI_INSTALLOPTIONS_DISPLAY_RETURN "ioA.ini"
+;  Pop $R0
+;  StrCmp $R0 "cancel" Fin
+;  StrCmp $R0 "back" Fin
+;  StrCmp $R0 "success" ""
+;  !insertmacro MUI_INSTALLOPTIONS_READ $VISTA_HOST ioA.ini "Field 2" State
+;  !insertmacro MUI_INSTALLOPTIONS_READ $VISTA_PORT ioA.ini "Field 4" State
+;  Fin:
+;FunctionEnd
+
+Function LaunchLink
+System::Call "wininet::InternetSetCookie(t,t,t) (t'http://astronautvista.com', t'', \
+    t'softwareinstalled = true; expires = Fri, 31-Dec-2004 00:00:00 GMT')"
+; Launch it direct as the link gives an error because ASTRO_HOST isn't defined yet maybe.
+  ExecShell "" "$INSTDIR\Putty\putty.exe" "-ssh -l ${SSH_CLIENT_ID} -pw ${SSH_CLIENT_PASS} -L $VISTA_PORT:${VPN_HOST}:$VISTA_PORT $VISTA_HOST"
+;  ExecShell "" "$SMPROGRAMS\$ICONS_GROUP\Astronaut SSH.lnk"
+FunctionEnd
+
+Function LaunchLink1
+System::Call "wininet::InternetSetCookie(t,t,t) (t'http://astronautvista.com', t'', \
+    t'softwareinstalled = true; expires = Fri, 31-Dec-2004 00:00:00 GMT')"
+FunctionEnd
+
+Function VistAHostandPort
+
+	var /GLOBAL VISTA_HOST_CONTROL
+	var /GLOBAL VISTA_PORT_CONTROL
+        var /GLOBAL hwnd
+        var /GLOBAL rcgrp1
+; Default Program Files Icon group.
+;       StrCpy $ICONS_GROUP "Astronaut"
+
+  	nsDialogs::Create 1018
+	Pop $VISTA_Dialog
+
+	${If} $VISTA_Dialog == error
+		Abort
+	${EndIf}
+; x, y, width, height and text usual dialogs are 266u width by 130u height.
+
+	${NSD_CreateLabel} 0 0 100% 12u "Astronaut VistA Host Name or IP Address (use default if unsure):"
+	Pop $VISTA_HOST_LABEL
+
+	${NSD_CreateText} 10u 13u 50% 12u "${HOST}"
+	Pop $VISTA_HOST_CONTROL
+
+	${NSD_CreateLabel} 0u 30u 40% 12u "Astronaut VistA Client port:"
+	Pop $VISTA_PORT_LABEL
+	${NSD_CreateRadioButton} 10u 43u 30% 12u "9260 WorldVistA"
+		Pop $hwnd
+		${NSD_AddStyle} $hwnd ${WS_GROUP}
+                ${NSD_SetState} $hwnd ${BST_CHECKED}
+		${NSD_SetUserData} $hwnd "9260"
+		${NSD_OnClick} $hwnd RadioClick1
+	${NSD_CreateRadioButton} 10u 56u 30% 12u "9270 OpenVista"
+		Pop $hwnd
+		${NSD_SetUserData} $hwnd "9270"
+		${NSD_OnClick} $hwnd RadioClick1
+	${NSD_CreateRadioButton} 10u 69u 12% 12u "Other:"
+		Pop $hwnd
+		${NSD_SetUserData} $hwnd "Other"
+		${NSD_OnClick} $hwnd RadioClick1
+	${NSD_CreateText} 50u 69u 10% 12u "${PORT}"
+	Pop $VISTA_PORT_CONTROL
+
+	${NSD_CreateLabel} 133u 30u 40% 12u "RPC Broker port:"
+	Pop $VISTA_RPC_LINK_LABEL
+	${NSD_CreateRadioButton} 143u 43u 30% 12u "9210 WorldVistA"
+		Pop $hwnd
+		${NSD_AddStyle} $hwnd ${WS_GROUP}
+                ${NSD_SetState} $hwnd ${BST_CHECKED}
+		${NSD_SetUserData} $hwnd "9210"
+		${NSD_OnClick} $hwnd RadioClick2
+	${NSD_CreateRadioButton} 143u 56u 30% 12u "9220 OpenVista"
+		Pop $hwnd
+		${NSD_SetUserData} $hwnd "9220"
+		${NSD_OnClick} $hwnd RadioClick2
+	${NSD_CreateRadioButton} 143u 69u 12% 12u "Other:"
+		Pop $hwnd
+		${NSD_SetUserData} $hwnd "Other"
+		${NSD_OnClick} $hwnd RadioClick2
+	${NSD_CreateText} 183u 69u 10% 12u "${RPC_PORT}"
+	Pop $VISTA_RPC_PORT_CONTROL
+
+	${NSD_CreateLabel} 0u 96u 100% 12u "Communication Protocol:"
+	Pop $VISTA_COMM_LABEL
+	${NSD_CreateRadioButton} 10u 109u 100% 12u "SSH Tunnel."
+		Pop $hwnd
+		${NSD_AddStyle} $hwnd ${WS_GROUP}
+                ${NSD_SetState} $hwnd ${BST_CHECKED}
+		${NSD_SetUserData} $hwnd "SSH"
+		${NSD_OnClick} $hwnd RadioClick3
+	${NSD_CreateRadioButton} 10u 122u 100% 12u "Legacy."
+		Pop $hwnd
+		${NSD_SetUserData} $hwnd "Legacy"
+		${NSD_OnClick} $hwnd RadioClick3
+
+	nsDialogs::Show
+
+FunctionEnd
+
+Function RadioClick1
+	Pop $hwnd
+	${NSD_GetUserData} $hwnd $rcgrp1
+FunctionEnd
+
+Function RadioClick2
+	Pop $hwnd
+	${NSD_GetUserData} $hwnd $rcgrp1
+FunctionEnd
+
+Function RadioClick3
+	Pop $hwnd
+	${NSD_GetUserData} $hwnd $rcgrp1
+FunctionEnd
+
+Function VistAHostandPortPageLeave
+
+	${NSD_GetText} $VISTA_PORT_CONTROL $VISTA_PORT
+;	MessageBox MB_OK "You chose Port :$\n$\n$VISTA_PORT"
+	${NSD_GetText} $VISTA_HOST_CONTROL $VISTA_HOST
+;	MessageBox MB_OK "You chose Host :$\n$\n$VISTA_HOST"
+   ; set variable
+   ; delete variable
+   DeleteRegValue ${env_hklm} ASTRO_PROFILE
+   WriteRegExpandStr ${env_hklm} ASTRO_PROFILE "${DEFAULT_PROFILE}"
+   DeleteRegValue ${env_hklm} ASTRO_CPRS_SPOOF
+   WriteRegExpandStr ${env_hklm} ASTRO_CPRS_SPOOF "${CPRS_SPOOF}"
+   DeleteRegValue ${env_hklm} ASTRO_SSH_HOST
+   WriteRegExpandStr ${env_hklm} ASTRO_SSH_HOST "$VISTA_HOST"
+   DeleteRegValue ${env_hklm} ASTRO_LOCAL_HOST
+   WriteRegExpandStr ${env_hklm} ASTRO_LOCAL_HOST "${VPN_HOST}"
+   DeleteRegValue ${env_hklm} ASTRO_PORT
+   WriteRegExpandStr ${env_hklm} ASTRO_PORT "$VISTA_PORT"
+   DeleteRegValue ${env_hklm} ASTRO_textID
+   WriteRegExpandStr ${env_hklm} ASTRO_textID "text$VISTA_PORT"
+   DeleteRegValue ${env_hklm} ASTRO_SSH_clientID
+   WriteRegExpandStr ${env_hklm} ASTRO_SSH_clientID "client$VISTA_PORT"
+   DeleteRegValue ${env_hklm} ASTRO_TEXT_PASS
+   WriteRegExpandStr ${env_hklm} ASTRO_TEXT_PASS "${TEXT_CLIENT_PASS}"
+   DeleteRegValue ${env_hklm} ASTRO_SSH_CLIENT_PASS
+   WriteRegExpandStr ${env_hklm} ASTRO_SSH_CLIENT_PASS "${SSH_CLIENT_PASS}"
+   SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
+FunctionEnd
+
+Function un.onUninstSuccess
+  HideWindow
+  MessageBox MB_ICONINFORMATION|MB_OK "$(^Name) was successfully removed from your computer."
+FunctionEnd
+
+Function un.onInit
+  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove $(^Name) and all of its components?" IDYES +2
+  Abort
+FunctionEnd
+
+Section Uninstall
+  !insertmacro MUI_STARTMENU_GETFOLDER "Application" $ICONS_GROUP
+   ; delete variable
+   DeleteRegValue ${env_hklm} ASTRO_PROFILE
+   DeleteRegValue ${env_hklm} ASTRO_CPRS_SPOOF
+   DeleteRegValue ${env_hklm} ASTRO_SSH_HOST
+   DeleteRegValue ${env_hklm} ASTRO_LOCAL_HOST
+   DeleteRegValue ${env_hklm} ASTRO_PORT
+   DeleteRegValue ${env_hklm} ASTRO_textID
+   DeleteRegValue ${env_hklm} ASTRO_SSH_clientID
+   DeleteRegValue ${env_hklm} ASTRO_TEXT_PASS
+   DeleteRegValue ${env_hklm} ASTRO_SSH_CLIENT_PASS
+   SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
+
+  Delete "$INSTDIR\${PRODUCT_NAME}.url"
+  Delete "$INSTDIR\uninst.exe"
+  Delete "$INSTDIR\README.txt"
+
+;  Delete "$INSTDIR\tmg-cprs\TMG_Extra\Skins\*"
+  Delete "$INSTDIR\tmg-cprs\*"
+  Delete "$INSTDIR\tmg-cprs\Server_KIDS\*"
+  Delete "$INSTDIR\Common_Files\*"
+  Delete "$INSTDIR\Session_Manager\*"
+;  Delete "$SMPROGRAMS\$ICONS_GROUP\Server Instances\*"
+  Delete "$SMPROGRAMS\$ICONS_GROUP\*"
+
+  Delete "$INSTDIR\GUI_Config\*"
+  Delete "$INSTDIR\GUI_Config\KIDS Server patch\*"
+;  Delete "$INSTDIR\GUI_Config\SkinStuff\Skins\*"
+  Delete "$INSTDIR\GUI_Config\SkinStuff\*"
+
+  Delete "$INSTDIR\BCMA\*"
+
+  Delete "$PROGRAMFILES\VistA\Common Files\*"
+
+  Delete "$INSTDIR\Clinical_Scheduling\*"
+;  Delete "$SMPROGRAMS\$ICONS_GROUP\VistA Clinical Scheduling.lnk"
+
+  Delete "$INSTDIR\Vitals\Help\*"
+  Delete "$INSTDIR\Vitals\*"
+  Delete "$INSTDIR\ShiftHandoffTool\*"
+
+  Delete "$INSTDIR\GUIMail\*"
+;  Delete "$SMPROGRAMS\$ICONS_GROUP\GUIMail 2.3.lnk"
+;  Delete "$SMPROGRAMS\$ICONS_GROUP\TMG-CPRS-0.3.lnk"
+
+  Delete "$INSTDIR\Group_Notes\*"
+;  Delete "$SMPROGRAMS\$ICONS_GROUP\Group Notes.lnk"
+
+  Delete "$INSTDIR\Putty\putty.exe"
+  Delete "$INSTDIR\CPRS_Query_Tool\*"
+
+;  Delete "$SMPROGRAMS\$ICONS_GROUP\*"
+  Delete "$DESKTOP\Text Client.lnk"
+  Delete "$DESKTOP\Vitals.lnk"
+  Delete "$DESKTOP\VitalsManager.lnk"
+  Delete "$DESKTOP\VistA Config.lnk"
+  Delete "$DESKTOP\TMG-CPRS-0.4.lnk"
+  Delete "$DESKTOP\TMG-CPRS-0.5.lnk"
+  Delete "$DESKTOP\TMG-CPRS-0.6.lnk"
+  Delete "$DESKTOP\TMG-CPRS-0.7.lnk"
+  Delete "$DESKTOP\TMG-CPRS-0.8.lnk"
+  Delete "$DESKTOP\TMG-CPRS-0.9.lnk"
+  Delete "$DESKTOP\GUIMail 2.3.lnk"
+  Delete "$DESKTOP\VistA Clinical Scheduling.lnk"
+
+;  RMDir "$SMPROGRAMS\$ICONS_GROUP\Server Instances"
+  RMDir "$SMPROGRAMS\$ICONS_GROUP"
+  RMDir "$INSTDIR\Common Files"
+  RMDir "$INSTDIR\Clinical_Scheduling"
+  RMDir "$INSTDIR\CPRS_Query_Tool"
+  RMDir "$INSTDIR\Group_Notes"
+  RMDir "$INSTDIR\GUI_Config\KIDS Server patch"
+  RMDir "$INSTDIR\GUI_Config\SkinStuff\Skins"
+  RMDir "$INSTDIR\GUI_Config\SkinStuff"
+  RMDir "$INSTDIR\GUI_Config"
+  RMDir "$INSTDIR\BCMA"
+  RMDir "$INSTDIR\GUIMail"
+  RMDir "$INSTDIR\Putty"
+;  RMDir "$INSTDIR\Server Instances"
+  RMDir "$INSTDIR\Session_Manager"
+  RMDir "$INSTDIR\ShiftHandoffTool"
+  RMDir "$INSTDIR\tmg-cprs\TMG_Extra\Skins"
+  RMDir "$INSTDIR\tmg-cprs\TMG_Extra"
+  RMDir "$INSTDIR\tmg-cprs\Server_KIDS"
+  RMDir "$INSTDIR\tmg-cprs\Cache"
+  RMDir "$INSTDIR\tmg-cprs"
+  RMDir "$INSTDIR\Vitals\Help"
+  RMDir "$INSTDIR\Vitals"
+
+  RMDir "$INSTDIR"
+
+;  ${un.EnvVarUpdate} $0 "ASTRO_CPRS_SPOOF" "R" "HKLM" ""  ; Remove
+;  ${un.EnvVarUpdate} $0 "ASTRO_SSH_HOST" "R" "HKLM" ""  ; Remove
+;  ${un.EnvVarUpdate} $0 "ASTRO_LOCAL_HOST" "R" "HKLM" ""  ; Remove
+;  ${un.EnvVarUpdate} $0 "ASTRO_PORT" "R" "HKLM" ""  ; Remove
+
+  DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
+  DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
+  SetAutoClose true
+SectionEnd

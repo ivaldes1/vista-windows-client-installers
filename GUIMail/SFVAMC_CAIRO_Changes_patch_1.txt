@@ -1,0 +1,88 @@
+SFVAMC Changes:
+
+ * Changed the version number to 2.1.2.  Change was made in the VersionInfo resource and the version label in the "About" box.
+
+ * Replaced the TRPCBroker component with the TSharedRPCBroker component.  Commented out the startup of the CLAGENT.EXE program.  This is no longer used by the TSharedRPCBroker component.
+
+ * Compiled with the latest version (11-17-2002) of the ICS components (http://overbyte.delphicenter.com/frame_index.html).  The distribution used to compile GUIMail is included in the ..\ics\ics.zip file.  Needed to change the TMimeDecode.PartLine method in mail.pas to be compatible with the new ICS changes.
+
+ * Added a Terminate Message button.
+
+ * Added Screen.Cursor and, in some cases, Try/Finally code to the following procedures in mailinterface.pas.
+     ForwardMail
+     LstCallRPC
+     MessageSearch
+     SendMessageText
+     SendMessageTextMax
+     SetUserPreferences
+
+ * Corrected a message sorting problem in the UpdateListView procedure in mail.pas by adding a call to lv.resort.
+
+ * Enable/disabled the Delete, Terminate, and Print buttons when no message(s) is selected.
+
+ * Changed the TFMLister.Screen value.  Concatenated in the value of XMDUZ rather than trying to use the XMDUZ variable that might or might not exist on the server.
+
+ * When scrolling up/down through the messages using the keyboard arrow keys, one key press would cause a skip of two messages.  This has been corrected.
+
+ * Update the "new mail" icon in the system tray on the following events:
+     New Mail button clicked
+     Delete button clicked
+     Terminate button clicked
+     Make New button clicked
+     Message is read
+     Message(s) moved to another mail basket (e.g., the WASTE basket)
+     Mail basket is purged or deleted
+
+ * The column headers in Message Properties -> Recipient List sometimes would not display correctly, this has been corrected.
+
+ * Replaced 'New Messages' and 'Message Search Results' string references with TXT_NEWMESSAGES and TXT_SEARCHRESULTS constants.
+
+ * Display the basket that contains the currently selected mail message when viewing 'New Messages' and 'Message Search Results', e.g., 'New Messages (Selected Message in XYZ Basket)'.
+
+ * Display new and priority message subjects in bold.
+
+ * Added "2003" to the copyright list in the "About" box.
+
+ * Added a label to the "About" box with the caption "Enhancements by San Francisco VAMC".
+
+ * Created a resource file cairologo.res that contains the cairo_logo.bmp and sfvamc_logo.bmp files.  Added {$R CAIROLOGO.RES} to the interface section of the GUIMail.pas component unit.  Added the display of the Cario logo to the GUIMail splash screen, the main GUIMail form, and the GUIMail "About" box.  The SFVAMC logo is displayed on the splash screen and in the "About" box.  (Did not put it on the main form due to space considerations.)  All logo images are loaded from the resource.
+
+
+CAIRO MODIFICATION (2004)
+
+
+* Upped the version to 2.2.
+
+* Compiled with Fileman components V1.0.
+
+* Added Time out variable base on  the Vista 'Time Read' field.
+
+* Vista parameter to allow/disallow the opening of attachments.
+
+* Vista parameters added to allow the disabling of the Timeout, and to allow setting a site specific timeout value.
+*-if a site parameter is not define user 'Timed Read'value is used, if this is not obtainable a default of 300 sec is used.
+
+* Display message text on single click.
+
+* Upon deletion of a message the message that follows is highlighted and displayed.
+
+* when printing a message to a vista printer the focus is set to the ok button after the selection is final.
+
+* When address a message you can now select individuals from the Global Address Book.
+
+* change the icon
+
+* added 2004 to the "About" box, and "Enhancements by CAIRO"
+
+for updates or fixes check the Cairo web page at: vaww.indianapolis.med.va.gov/cairo/cairohome.htm
+
+CAIRO MODIFICATION (2005)
+
+ Upped the version to 2.3.
+
+ Comes with two compiled versions
+  -non-callback broker.
+  -Sharedbroker (does not have the non callback feature)
+
+InstallShield with allow you to select the version.
+ - if the sharedbroker is installed InstallShield will install and execute the SessionMgr. 

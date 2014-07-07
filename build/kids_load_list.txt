@@ -1,0 +1,185 @@
+/opt/worldvista/EHR/kids/12.3/TMG1-1.0-02d.KIDS
+/opt/worldvista/EHR/kids/12.3/TMG1-1.0-03.KIDS
+/opt/worldvista/EHR/kids/12.3/TMG1-1.0-03C.KIDS
+
+Build TMG-CPRS-LOOKUP*1.0*2 has been loaded before, here is when:
+      TMG-CPRS-LOOKUP*1.0*2   Install Completed
+                              was loaded on Mar 03, 2012@15:34:39
+
+
+/opt/worldvista/EHR/kids/12.3/TMG1-1.0-03D.KIDS
+/opt/worldvista/EHR/kids/12.3/TMG1-1.0-04.KIDS
+/opt/worldvista/EHR/kids/12.3/TMG1-1.0-05.KIDS
+/opt/worldvista/EHR/kids/12.3/TMG1-1.0-06.KIDS
+/opt/worldvista/EHR/kids/12.3/TMG1-1.0-07.KIDS
+/opt/worldvista/EHR/kids/12.3/TMG1-1.0-08.KIDS
+/opt/worldvista/EHR/kids/12.3/TMG1-1.0-08B.KIDS
+
+                             TMG-CPRS-IMAGING*1.0*1
+--------------------------------------------------------------------------------
+                At column 98, line 4, source module /opt/worldvista/EHR/routines/_ZTER1.m
+%GTM-E-FNOTONSYS, Function or special variable is not supported by this operating system
+         S @%ZTERRT@("ZH")=$TR($ZH,",","^")
+                                ^-----
+                At column 25, line 5, source module /opt/worldvista/EHR/routines/_ZTER1.m
+%GTM-E-INVSVN, Invalid special variable name
+         S %ZTER111="%" F  D  S %ZTER111=$ZSORT(@%ZTER111) Q:%ZTER111=""  ;Code from DEC
+                                          ^-----
+                At column 35, line 6, source module /opt/worldvista/EHR/routines/_ZTER1.m
+%GTM-E-INVFCN, Invalid function name
+
+
+CF2+7^TMGRPC1D, Label referenced but not defined,150373202,-%GTM-E-LABELUNKNOWN
+--------------------------------------------------------------------------------
+          +------------------------------------------------------------+
+
+/opt/worldvista/EHR/kids/12.3/TMG1-1.0-09.KIDS
+/opt/worldvista/EHR/kids/12.3/TMG1-1.0-10.KIDS
+/opt/worldvista/EHR/kids/12.3/TMG1-1.0-10B.KIDS
+/opt/worldvista/EHR/kids/12.3/TMG1-1.0-10C.KIDS
+/opt/worldvista/EHR/kids/12.3/TMG1-1.0-10D.KIDS
+/opt/worldvista/EHR/kids/12.3/TMG1-1.0-11.KIDS
+                                  TMG1*1.0*11
+--------------------------------------------------------------------------------
+
+ Install Started for TMG1*1.0*11 :
+               Mar 03, 2012@15:49:34
+
+Build Distribution Date: Aug 27, 2010
+
+ Installing Routines:
+               Mar 03, 2012@15:49:34
+
+ Installing PACKAGE COMPONENTS:
+
+ Installing REMOTE PROCEDURE
+               Mar 03, 2012@15:49:34
+
+ Running Post-Install Routine: PINST1^TMGRPC1D
+
+PINST1+3^TMGRPC1D, Label referenced but not defined,150373202,-%GTM-E-LABELUNKNOWN
+--------------------------------------------------------------------------------
+          +------------------------------------------------------------+
+    0%    ¦             25             50             75               ¦
+Complete  +------------------------------------------------------------+
+
+/opt/worldvista/EHR/kids/12.3/TMG1-1.0-12.KIDS
+/opt/worldvista/EHR/kids/12.3/TMG1-1.0-13.KIDS
+/opt/worldvista/EHR/kids/12.3/TMG1-1.0-14.KIDS
+/opt/worldvista/EHR/kids/12.3/TMG1-1.0-15.KIDS
+
+                                  TMG1*1.0*15
+--------------------------------------------------------------------------------
+
+ Installing PACKAGE COMPONENTS:
+
+ Installing REMOTE PROCEDURE
+               Mar 03, 2012@15:52:33
+
+ Running Post-Install Routine: ENSUREAL^TMGRPC1B
+
+ Updating Routine file...
+
+ Updating KIDS files...
+
+ TMG1*1.0*15 Installed.
+               Mar 03, 2012@15:52:34
+
+ No link to PACKAGE file
+
+ NO Install Message sent
+-----------------------------------------------------------
+
+/opt/worldvista/EHR/kids/12.3/TMG1-1.0-16.KIDS
+
+Hmm, they loaded growth charts:
+Build TMG1*1.0*16 has been loaded before, here is when:
+      TMG1*1.0*16   Install Completed
+                    was loaded on May 10, 2011@14:15:51
+
+
+/opt/worldvista/EHR/kids/12.3/TMG1-1.0-17.KIDS
+
+   101.24    OE/RR REPORT  (including data)
+Note:  You already have the 'OE/RR REPORT' File.
+I will OVERWRITE your data with mine.
+
+
+   8925.1    TIU DOCUMENT DEFINITION  (including data)
+Note:  You already have the 'TIU DOCUMENT DEFINITION' File.
+I will OVERWRITE your data with mine.
+
+
+   22713     TMG GROWTH CHARTS DATA  (including data)
+Note:  You already have the 'TMG GROWTH CHARTS DATA' File.
+I will OVERWRITE your data with mine.
+
+/opt/worldvista/EHR/kids/12.3/TMG1-1.0-18.KIDS
+
+Build TMG1*1.0*18 has been loaded before, here is when:
+      TMG1*1.0*18   Install Completed
+                    was loaded on May 10, 2011@21:37:45
+      TMG1*1.0*18   Install Completed
+                    was loaded on May 28, 2011@12:08:01
+      TMG1*1.0*18   Install Completed
+                    was loaded on May 29, 2011@15:10:49
+      TMG1*1.0*18   Install Completed
+                    was loaded on Jun 01, 2011@10:03:45
+OK to continue with Load? NO//
+
+
+/opt/worldvista/EHR/kids/12.3/TMG1-1.0-19.KIDS
+/opt/worldvista/EHR/kids/12.3/TMG1-1.0-20.KIDS
+
+Threw some errors not shown:
+
+                                  TMG1*1.0*20
+--------------------------------------------------------------------------------
+
+ Installing PACKAGE COMPONENTS:
+
+ Installing REMOTE PROCEDURE
+               Mar 03, 2012@15:56:41
+
+ Running Post-Install Routine: ENSUREAL^TMGRPC1B
+
+ Updating Routine file...
+
+ Updating KIDS files...
+
+ TMG1*1.0*20 Installed.
+               Mar 03, 2012@15:56:41
+
+ No link to PACKAGE file
+
+ NO Install Message sent
+
+/opt/worldvista/EHR/kids/12.3/TMGORW-1.0-1.KIDS
+/opt/worldvista/EHR/kids/12.3/TMG-INTRACARE-1.0-3.KIDS
+
+
+   8994      REMOTE PROCEDURE  (including data)
+Note:  You already have the 'REMOTE PROCEDURE' File.
+I will OVERWRITE your data with mine.
+
+
+/opt/worldvista/EHR/kids/12.3/TMG-GUI-CONFIG-1.0-2.KIDS
+/opt/worldvista/EHR/kids/12.3/TMG-GUI-CONFIG-1.0-3.KIDS
+/opt/worldvista/EHR/kids/12.3/TMG-GUI-CONFIG-1.0-4.KIDS
+
+For a Virgin WorldVistA 6-08/3-09 release install the following kids builds in this order:
+
+    XB 4 (in https://trac.opensourcevista.net/svn/IHS-VA_UTILITIES-XB/tag/rel_20091207/xb0400.k.WV.zip)
+    BMX 2.3 (in https://trac.opensourcevista.net/svn/BMXNET_RPMS_dotNET_UTILITIES-BMX/tag/2.31/bmx_0231.zip)
+    XWB 1.1 patch 113102 (in https://trac.opensourcevista.net/svn/BMXNET_RPMS_dotNET_UTILITIES-BMX/tag/2.31/bmx_0231.zip)
+    SD 5.3 patch 11310 (in https://trac.opensourcevista.net/svn/Scheduling/tag/1.6/bsdx_0160.zip)
+    BSDX 1.6 (in https://trac.opensourcevista.net/svn/Scheduling/tag/1.6/bsdx_0160.zip) 
+
+/opt/worldvista/EHR/kids/12.3/scheduling_1_6/xb0400.KIDS -- bunch of error messages but installed.
+/opt/worldvista/EHR/kids/12.3/scheduling_1_6/bmx_0230.KIDS -- error messages but installed.
+/opt/worldvista/EHR/kids/12.3/scheduling_1_6/xwb_0110_113102.KIDS
+/opt/worldvista/EHR/kids/12.3/scheduling_1_6/bsdx_0160.KIDS
+/opt/worldvista/EHR/kids/12.3/scheduling_1_6/sd0530_11310.KIDS
+
+
+
